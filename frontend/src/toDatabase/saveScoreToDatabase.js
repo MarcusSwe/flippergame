@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export default function SaveScoreToDatabase(name, score, reload, setReload){
+export default function SaveScoreToDatabase(name, score){
  
     const config = {
         url: 'http://localhost:8080/newscore',
@@ -8,7 +8,5 @@ export default function SaveScoreToDatabase(name, score, reload, setReload){
         data: {'name': name,
                'score': score}
     }
-
-    return axios(config).then(setReload(!reload))
-
+    return axios(config)
 }

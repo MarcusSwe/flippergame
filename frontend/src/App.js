@@ -6,16 +6,15 @@ function App() {
 
   const [userName, setUserName] = useState("name")
   const [score, setScore] = useState(0)
-  const [allscores, SetAllScores] = useState([])
-  const [reload, setReload] = useState(false)
+  const [allscores, SetAllScores] = useState([])  
 
   const saveScore = () => {
-    SaveScoreToDatabase(userName, score, reload, setReload)    
-  }
+    SaveScoreToDatabase(userName, score)
+  } 
 
-  useEffect(() => {
-    GetScoresFromDatabase(SetAllScores)    
-  }, [reload])
+ useEffect(() =>{  
+  GetScoresFromDatabase(SetAllScores)    
+ }, [allscores])
 
   useEffect(() => {
     GetScoresFromDatabase(SetAllScores)    
