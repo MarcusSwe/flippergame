@@ -23,10 +23,6 @@ public class Controller {
 
     @PostMapping("/newscore")
     public String createScore(@RequestBody ScoreModel newScore){
-
         return service.addScore(new Score(newScore.getName(), newScore.getScore()));
     }
-
-
-
 }
