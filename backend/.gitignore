@@ -1,5 +1,4 @@
 HELP.md
-cpåke.txt
 src/main/resources/application.properties
 target/
 !.mvn/wrapper/maven-wrapper.jar
