@@ -16,7 +16,7 @@ function App() {
   GetScoresFromDatabase(SetAllScores)    
  }, [allscores])
 
-  useEffect(() => {
+ useEffect(() => {
     GetScoresFromDatabase(SetAllScores)    
   }, [])
 
@@ -34,7 +34,3 @@ function App() {
 }
 
 export default App;
-
-/* 
- GetScoresFromDatabase().then(res => SetAllScores(res.data))    
-*/
