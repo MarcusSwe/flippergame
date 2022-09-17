@@ -9,12 +9,8 @@ function App() {
   const [allscores, SetAllScores] = useState([])  
 
   const saveScore = () => {
-    SaveScoreToDatabase(userName, score)
+    SaveScoreToDatabase(userName, score).then(() =>GetScoresFromDatabase(SetAllScores))
   } 
-
- useEffect(() =>{  
-  GetScoresFromDatabase(SetAllScores)    
- }, [allscores])
 
  useEffect(() => {
     GetScoresFromDatabase(SetAllScores)    
