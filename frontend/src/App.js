@@ -10,9 +10,7 @@ function App() {
   const [score, setScore] = useState(0)
   const [allscores, SetAllScores] = useState([])  
 
-  
-
-  
+    
   
 
   const saveScore = () => {
@@ -31,7 +29,7 @@ function App() {
      <input value={score} type="number" onChange={e =>{setScore(e.target.value)}} />
      <button onClick={() => saveScore()}>to database</button>     
       <div>
-       {allscores.map((p, index) => <div key={index}>{p.name} - {p.score}</div>)}
+       {allscores.sort((a,b) => a.score - b.score).slice(0,20).map((p, index) => <div key={index}>{p.name} - {p.score}</div>)}
       </div>
     </div>
   );

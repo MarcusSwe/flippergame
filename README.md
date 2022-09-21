@@ -1,3 +1,3 @@
-Flippergame - Java, React/Javascript/CSS, Springboot, MongoDB
+Flippergame - Java, React/Javascript/Canvas, Springboot, MongoDB
 
 ..ongoing..trying different things.. 
