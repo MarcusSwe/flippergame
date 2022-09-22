@@ -19,18 +19,36 @@ const Canvas = props => {
         for(let i = 0; i < 40; i++){
            points.push(new Point(random.range(0,600), random.range(0,600), random.range(0,35)))
         }
-
-        points.forEach(p => {p.draw(context)})
+          
         
         const animate = () => {
-         context.fillStyle = 'white'
+         context.fillStyle = 'black'
          context.fillRect(0,0,600,600)
-                points.forEach(p => {
+         
+         for(let i=0; i < points.length; i++){
+
+            const point = points[i]
+            
+            for(let l = 0; l < points.length; l++){                
+                const nextPoint = points[l]              
+                            
+                context.beginPath()
+                context.moveTo(point.x, point.y)                
+                context.lineTo(nextPoint.x, nextPoint.y);
+                context.strokeStyle = 'rgb(62,62,62)'
+                context.stroke();
+                
+            }
+
+         }         
+         
+         points.forEach(p => {
                     p.movePoint()
                     p.draw(context)
                     p.bounce(canvasSize.width,canvasSize.height)
                 })
             animationId = window.requestAnimationFrame(animate);
+
          }
 
         animate();
@@ -38,9 +56,12 @@ const Canvas = props => {
         return () => {
             window.cancelAnimationFrame(animationId)
         }
+
+
     },[])
 
     return <canvas {...canvasSize} ref={canvasRef} />
+    
 
 }
 
@@ -49,8 +70,8 @@ class Point {
         this.x = x
         this.y = y
         this.radius = radius
-        this.moveDirX = random.range(-0.3,0.3)
-        this.moveDirY = random.range(-0.3,0.3)
+        this.moveDirX = random.range(-0.6,0.6)
+        this.moveDirY = random.range(-0.6,0.6)
         this.color = `rgb(${random.range(0,255)},${random.range(0,255)},${random.range(0,255)})`
     }
 
