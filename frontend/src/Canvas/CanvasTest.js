@@ -31,7 +31,11 @@ const Canvas = props => {
             
             for(let l = 0; l < points.length; l++){                
                 const nextPoint = points[l]              
-                            
+                
+                const distance = Math.sqrt(Math.pow((point.x - nextPoint.x),2)+Math.pow((point.y - nextPoint.y),2))
+
+                if(distance > 150) continue
+                
                 context.beginPath()
                 context.moveTo(point.x, point.y)                
                 context.lineTo(nextPoint.x, nextPoint.y);
