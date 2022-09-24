@@ -12,6 +12,15 @@ const Canvas = props => {
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
        
+        let testpunkten = new Point(260,270,50)
+
+        window.addEventListener('keydown', (e) => {
+            console.log("--"+e.key)
+            if(e.key == 'ArrowUp'){
+            testpunkten.movePoint()            
+            }
+        })
+
         let animationId
 
         const points = []
@@ -19,12 +28,11 @@ const Canvas = props => {
         for(let i = 0; i < 40; i++){
            points.push(new Point(random.range(0,600), random.range(0,600), random.range(0,35)))
         }
-          
-        
+
         const animate = () => {
          context.fillStyle = 'black'
-         context.fillRect(0,0,600,600)
-         
+         context.fillRect(0,0,600,600)         
+
          for(let i=0; i < points.length; i++){
 
             const point = points[i]
@@ -35,6 +43,8 @@ const Canvas = props => {
                 const distance = Math.sqrt(Math.pow((point.x - nextPoint.x),2)+Math.pow((point.y - nextPoint.y),2))
 
                 if(distance > 150) continue
+
+                context.lineWidth =  math.mapRange(distance, 0, 150, 8, 1)
                 
                 context.beginPath()
                 context.moveTo(point.x, point.y)                
@@ -43,8 +53,10 @@ const Canvas = props => {
                 context.stroke();
                 
             }
-
          }         
+
+         testpunkten.draw(context)
+         testpunkten.bounce(canvasSize.width,canvasSize.height)
          
          points.forEach(p => {
                     p.movePoint()
@@ -54,8 +66,7 @@ const Canvas = props => {
             animationId = window.requestAnimationFrame(animate);
 
          }
-
-        animate();
+       animate();
        
         return () => {
             window.cancelAnimationFrame(animationId)
