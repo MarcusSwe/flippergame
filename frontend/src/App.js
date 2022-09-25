@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import SaveScoreToDatabase from "./toDatabase/saveScoreToDatabase";
 import GetScoresFromDatabase from "./toDatabase/getScoresFromDatabase";
 import CanvasTest from './Canvas/CanvasTest'
+import Flipper from "./Canvas/Flipper";
 
 
 function App() {
@@ -23,7 +24,7 @@ function App() {
 
   return (
     <div>
-      <CanvasTest />
+      <Flipper />
            <div>fetch to mongoDB test</div>
      <input value={userName} type="text" onChange={e =>{setUserName(e.target.value)}} />
      <input value={score} type="number" onChange={e =>{setScore(e.target.value)}} />
