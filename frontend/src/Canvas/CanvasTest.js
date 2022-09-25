@@ -7,19 +7,22 @@ const Canvas = props => {
 
     const canvasRef = useRef(null)    
     const canvasSize = { width: 600, height:600 } 
- 
+  
+    const movePunkt = (e) => {
+        console.log("--"+e.key)
+        if(e.key == 'ArrowUp'){
+        e.currentTarget.myParam.movePoint()            
+        }
+    }
+
     useEffect(() =>{
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
        
         let testpunkten = new Point(260,270,50)
 
-        window.addEventListener('keydown', (e) => {
-            console.log("--"+e.key)
-            if(e.key == 'ArrowUp'){
-            testpunkten.movePoint()            
-            }
-        })
+        window.addEventListener('keydown', movePunkt)
+        window.myParam = testpunkten;        
 
         let animationId
 
@@ -70,6 +73,7 @@ const Canvas = props => {
        
         return () => {
             window.cancelAnimationFrame(animationId)
+            window.removeEventListener('keydown', movePunkt)
         }
 
 
