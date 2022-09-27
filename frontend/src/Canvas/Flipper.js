@@ -1,3 +1,4 @@
+import { object } from 'prop-types'
 import React, { useEffect, useRef } from 'react'
 const math = require('canvas-sketch-util/math')
 const random = require('canvas-sketch-util/random')
@@ -10,7 +11,8 @@ const Flipper = props => {
   
     const movePunkt = (e) => {        
         if(e.key == 'ArrowUp'){        
-        e.currentTarget.testpunkten.movePoint(canvasSize.width,canvasSize.height, e.currentTarget.collision)            
+        e.currentTarget.testpunkten.movePoint(canvasSize.width,canvasSize.height, e.currentTarget.collision,
+          e.currentTarget.context)            
         }
     }
     
@@ -18,20 +20,20 @@ const Flipper = props => {
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
        
-        let testpunkten = new Point(260,270,50,20,20)
+        let testpunkten = new Point(260,270,35,20,20)
         let collisionPunk = new Point(400,400, 10,0,0)
         let collisionPunk2 = new Point(100,100,50,0,0)
-        let collisionPunk3 = new Point(400,100,50,0,0)
-        let collisionPunk4 = new Point(120,500,20,0,0)
+        let collisionPunk3 = new Point(400,100,50,0,0)        
 
-        let leftFlipper = new Flippers(0,599,45, "right")
-        let rightFlipper = new Flippers(599,599,45, "left")
+        let leftFlipper = new Flippers(0,599,45, "left")
+        let rightFlipper = new Flippers(599,599,45, "right")
 
-        let collisionArray = [collisionPunk,collisionPunk2, collisionPunk3, collisionPunk4]        
+        let collisionArray = [collisionPunk,collisionPunk2, collisionPunk3]        
 
         window.addEventListener('keydown', movePunkt)
         window.testpunkten = testpunkten        
         window.collision = collisionArray
+        window.context = context
 
         let animationId
           
@@ -72,7 +74,7 @@ class Point {
         this.color = `rgb(${random.range(0,255)},${random.range(0,255)},${random.range(0,255)})`
     }
 
-    movePoint(x,y, collisionArray){        
+    movePoint(x,y, collisionArray, context){        
         //console.log(this.x + "       " + this.y)        
         //console.log("AVSTÅND: " +Math.sqrt(Math.pow(this.x - 100,2) +Math.pow(this.y - 100,2)))
         
@@ -85,7 +87,10 @@ class Point {
         Math.pow(this.y - object.y,2))) <= 
         object.radius+Math.abs(this.moveDirX))     
 
-        if(checkCollision !== undefined){
+        let pixels =  context.getImageData(this.x+this.moveDirX+this.radius, this.y+this.moveDirY+this.radius,1,1)                  
+        console.log(pixels)
+
+        if(checkCollision !== undefined){          
             this.moveDirX *= -1
             this.x += this.moveDirX        
         } else {
@@ -140,23 +145,23 @@ class Flippers {
         context.save()
         context.beginPath();
         context.moveTo(this.x, this.y)
-        if(this.side === "right"){
+        if(this.side === "left"){
             context.lineTo(this.getX(this.angle),600-this.getY(this.angle))
         } else context.lineTo(600-this.getX(this.angle),600-this.getY(this.angle))        
-        context.lineWidth = 10;
+        context.lineWidth = 21;
         context.strokeStyle = 'red'
         context.stroke()
         context.restore()
         }
 
         getX(x){
-          let radius = 220;
+          let radius = 230;
           let angle = math.degToRad(x)         
           return Math.cos(angle) * radius
         }
 
         getY(x){
-          let radius = 220;
+          let radius = 230;
           let angle = math.degToRad(x)          
           return Math.sin(angle) * radius
         }
