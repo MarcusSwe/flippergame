@@ -24,6 +24,9 @@ const Flipper = props => {
         let collisionPunk3 = new Point(400,100,50,0,0)
         let collisionPunk4 = new Point(120,500,20,0,0)
 
+        let leftFlipper = new Flippers(0,599,45, "right")
+        let rightFlipper = new Flippers(599,599,45, "left")
+
         let collisionArray = [collisionPunk,collisionPunk2, collisionPunk3, collisionPunk4]        
 
         window.addEventListener('keydown', movePunkt)
@@ -38,6 +41,8 @@ const Flipper = props => {
 
          testpunkten.draw(context)
          collisionArray.forEach(p => p.draw(context))
+         leftFlipper.draw(context)
+         rightFlipper.draw(context)
     
          animationId = window.requestAnimationFrame(animate);
 
@@ -76,9 +81,9 @@ class Point {
         this.x += this.moveDirX        
       } else { 
 
-        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.reportPositionAndDirection().x,2) +
-        Math.pow(this.y - object.reportPositionAndDirection().y,2))) <= 
-        object.reportPositionAndDirection().radius+Math.abs(this.moveDirX))     
+        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) +
+        Math.pow(this.y - object.y,2))) <= 
+        object.radius+Math.abs(this.moveDirX))     
 
         if(checkCollision !== undefined){
             this.moveDirX *= -1
@@ -93,8 +98,8 @@ class Point {
         this.y += this.moveDirY
       } else {
 
-        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.reportPositionAndDirection().x,2) + 
-        Math.pow(this.y - object.reportPositionAndDirection().y,2))) <= 
+        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) + 
+        Math.pow(this.y - object.y,2))) <= 
         object.radius+Math.abs(this.moveDirY))
         
        if(checkCollision !== undefined){
@@ -107,7 +112,6 @@ class Point {
       }      
     }
 
-
     draw(context) {      
         context.save()
         context.beginPath();
@@ -117,13 +121,47 @@ class Point {
         context.restore()
     }
 
-    reportPositionAndDirection(){
-        return {x:this.x,
-        y:this.y,
-        moveX:this.moveDirX,
-        moveY:this.moveDirY,
-        radius:this.radius}
-    }
+}
+
+class Flippers {
+ 
+        constructor(x,y, angle = 0, side){
+            this.x = x
+            this.y = y
+            this.angle = angle
+            this.side = side            
+        }
+
+        moveFlipper(){
+
+        }
+
+        draw(context){
+        context.save()
+        context.beginPath();
+        context.moveTo(this.x, this.y)
+        if(this.side === "right"){
+            context.lineTo(this.getX(this.angle),600-this.getY(this.angle))
+        } else context.lineTo(600-this.getX(this.angle),600-this.getY(this.angle))        
+        context.lineWidth = 10;
+        context.strokeStyle = 'red'
+        context.stroke()
+        context.restore()
+        }
+
+        getX(x){
+          let radius = 220;
+          let angle = math.degToRad(x)         
+          return Math.cos(angle) * radius
+        }
+
+        getY(x){
+          let radius = 220;
+          let angle = math.degToRad(x)          
+          return Math.sin(angle) * radius
+        }
+
+   
 }
 
 export default Flipper
