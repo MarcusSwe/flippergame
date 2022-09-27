@@ -18,35 +18,28 @@ const Flipper = props => {
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
        
-        let testpunkten = new Point(260,270,50)
+        let testpunkten = new Point(260,270,50,20,20)
         let collisionPunk = new Point(400,400, 10,0,0)
         let collisionPunk2 = new Point(100,100,50,0,0)
         let collisionPunk3 = new Point(400,100,50,0,0)
         let collisionPunk4 = new Point(120,500,20,0,0)
 
-        let CollisionArray = [collisionPunk.reportPositionAndDirection(),collisionPunk2.reportPositionAndDirection(), 
-            collisionPunk3.reportPositionAndDirection(), collisionPunk4.reportPositionAndDirection()]
-        
+        let collisionArray = [collisionPunk,collisionPunk2, collisionPunk3, collisionPunk4]        
 
         window.addEventListener('keydown', movePunkt)
         window.testpunkten = testpunkten        
-        window.collision = CollisionArray
+        window.collision = collisionArray
 
         let animationId
           
         const animate = () => {
          context.fillStyle = 'black'
-         context.fillRect(0,0,600,600)         
-
-         
+         context.fillRect(0,0,600,600)
 
          testpunkten.draw(context)
-         collisionPunk.draw(context)
-         collisionPunk2.draw(context)
-         collisionPunk3.draw(context)
-         collisionPunk4.draw(context)
+         collisionArray.forEach(p => p.draw(context))
     
-            animationId = window.requestAnimationFrame(animate);
+         animationId = window.requestAnimationFrame(animate);
 
          }
        animate();
@@ -75,20 +68,19 @@ class Point {
     }
 
     movePoint(x,y, collisionArray){        
-        console.log(this.x + "       " + this.y)        
-        console.log("AVSTÅND: " +Math.sqrt(Math.pow(this.x - 100,2) +Math.pow(this.y - 100,2)))
+        //console.log(this.x + "       " + this.y)        
+        //console.log("AVSTÅND: " +Math.sqrt(Math.pow(this.x - 100,2) +Math.pow(this.y - 100,2)))
         
       if((this.x + this.moveDirX) <= 0 || (this.x + this.moveDirX) >= x) {        
         this.moveDirX *= -1
         this.x += this.moveDirX        
       } else { 
 
-        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) +Math.pow(this.y - object.y,2))) <= 
-        object.radius+Math.abs(this.moveDirX))     
+        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.reportPositionAndDirection().x,2) +
+        Math.pow(this.y - object.reportPositionAndDirection().y,2))) <= 
+        object.reportPositionAndDirection().radius+Math.abs(this.moveDirX))     
 
         if(checkCollision !== undefined){
-            
-            console.log("XXXXXX TRIGGER")
             this.moveDirX *= -1
             this.x += this.moveDirX        
         } else {
@@ -101,12 +93,11 @@ class Point {
         this.y += this.moveDirY
       } else {
 
-        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) +Math.pow(this.y - object.y,2))) <= 
+        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.reportPositionAndDirection().x,2) + 
+        Math.pow(this.y - object.reportPositionAndDirection().y,2))) <= 
         object.radius+Math.abs(this.moveDirY))
         
        if(checkCollision !== undefined){
-        
-        console.log("YYYYYYYYY TRIGGER")
         this.moveDirY *= -1
         this.y += this.moveDirY             
        }else {
