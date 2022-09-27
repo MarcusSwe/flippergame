@@ -8,22 +8,29 @@ const Flipper = props => {
     const canvasRef = useRef(null)    
     const canvasSize = { width: 600, height:600 } 
   
-    const movePunkt = (e) => {
-        
-        if(e.key == 'ArrowUp'){
-            
-        e.currentTarget.myParam.movePoint(canvasSize.width,canvasSize.height)            
+    const movePunkt = (e) => {        
+        if(e.key == 'ArrowUp'){        
+        e.currentTarget.testpunkten.movePoint(canvasSize.width,canvasSize.height, e.currentTarget.collision)            
         }
     }
-
+    
     useEffect(() =>{
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
        
         let testpunkten = new Point(260,270,50)
+        let collisionPunk = new Point(400,400, 10,0,0)
+        let collisionPunk2 = new Point(100,100,50,0,0)
+        let collisionPunk3 = new Point(400,100,50,0,0)
+        let collisionPunk4 = new Point(120,500,20,0,0)
+
+        let CollisionArray = [collisionPunk.reportPositionAndDirection(),collisionPunk2.reportPositionAndDirection(), 
+            collisionPunk3.reportPositionAndDirection(), collisionPunk4.reportPositionAndDirection()]
+        
 
         window.addEventListener('keydown', movePunkt)
-        window.myParam = testpunkten;        
+        window.testpunkten = testpunkten        
+        window.collision = CollisionArray
 
         let animationId
           
@@ -31,9 +38,13 @@ const Flipper = props => {
          context.fillStyle = 'black'
          context.fillRect(0,0,600,600)         
 
-         //testpunkten.bounce(canvasSize.width,canvasSize.height)                 
+         
+
          testpunkten.draw(context)
-                  
+         collisionPunk.draw(context)
+         collisionPunk2.draw(context)
+         collisionPunk3.draw(context)
+         collisionPunk4.draw(context)
     
             animationId = window.requestAnimationFrame(animate);
 
@@ -54,35 +65,57 @@ const Flipper = props => {
 }
 
 class Point {
-    constructor(x,y,radius){
+    constructor(x,y,radius = 0,dirX = 6, dirY = 6){
         this.x = x
         this.y = y
         this.radius = radius
-        this.moveDirX = 6
-        this.moveDirY = 6
+        this.moveDirX = dirX
+        this.moveDirY = dirY
         this.color = `rgb(${random.range(0,255)},${random.range(0,255)},${random.range(0,255)})`
     }
 
-    movePoint(x,y){        
+    movePoint(x,y, collisionArray){        
+        console.log(this.x + "       " + this.y)        
+        console.log("AVSTÅND: " +Math.sqrt(Math.pow(this.x - 100,2) +Math.pow(this.y - 100,2)))
+        
       if((this.x + this.moveDirX) <= 0 || (this.x + this.moveDirX) >= x) {        
         this.moveDirX *= -1
-        this.x += (this.moveDirX)                
-      } else {        
         this.x += this.moveDirX        
+      } else { 
+
+        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) +Math.pow(this.y - object.y,2))) <= 
+        object.radius+Math.abs(this.moveDirX))     
+
+        if(checkCollision !== undefined){
+            
+            console.log("XXXXXX TRIGGER")
+            this.moveDirX *= -1
+            this.x += this.moveDirX        
+        } else {
+            this.x += this.moveDirX
+        }
+        
       }      
       if((this.y + this.moveDirY) <= 0 || (this.y + this.moveDirY) >= y) {        
         this.moveDirY *= -1
-        this.y += (this.moveDirY)        
-      } else 
-      {         
         this.y += this.moveDirY
+      } else {
+
+        const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) +Math.pow(this.y - object.y,2))) <= 
+        object.radius+Math.abs(this.moveDirY))
+        
+       if(checkCollision !== undefined){
+        
+        console.log("YYYYYYYYY TRIGGER")
+        this.moveDirY *= -1
+        this.y += this.moveDirY             
+       }else {
+        this.y += this.moveDirY
+       }
+
       }      
     }
 
-   /*  bounce(x,y){
-        if (this.x <= 0 || this.x >= x) this.moveDirX *= -1
-        if (this.y <= 0 || this.y >= y) this.moveDirY *= -1
-    }*/
 
     draw(context) {      
         context.save()
@@ -91,6 +124,14 @@ class Point {
         context.fillStyle = this.color
         context.fill()
         context.restore()
+    }
+
+    reportPositionAndDirection(){
+        return {x:this.x,
+        y:this.y,
+        moveX:this.moveDirX,
+        moveY:this.moveDirY,
+        radius:this.radius}
     }
 }
 
