@@ -14,6 +14,14 @@ const Flipper = props => {
         e.currentTarget.testpunkten.movePoint(canvasSize.width,canvasSize.height, e.currentTarget.collision,
           e.currentTarget.context)            
         }
+        if(e.key == 'ArrowLeft'){        
+          e.currentTarget.leftFlipper.moveFlipperUp(5, e.currentTarget.context)
+          e.currentTarget.rightFlipper.moveFlipperUp(5, e.currentTarget.context)
+          }
+        if(e.key == 'ArrowRight'){        
+          e.currentTarget.leftFlipper.moveFlipperDown(5, e.currentTarget.context)
+          e.currentTarget.rightFlipper.moveFlipperDown(5, e.currentTarget.context)
+          }
     }
     
     useEffect(() =>{
@@ -34,6 +42,8 @@ const Flipper = props => {
         window.testpunkten = testpunkten        
         window.collision = collisionArray
         window.context = context
+        window.leftFlipper = leftFlipper
+        window.rightFlipper = rightFlipper
 
         let animationId
           
@@ -78,13 +88,7 @@ class Point {
         //console.log(this.x + "       " + this.y)        
         //console.log("AVSTÅND: " +Math.sqrt(Math.pow(this.x - 100,2) +Math.pow(this.y - 100,2)))
         let pixels =  context.getImageData(this.x+this.moveDirX, this.y+this.moveDirY,1,1)
-        console.log(pixels)
-        console.log("XXXXXX: "+(this.x+this.moveDirX+Math.sign(this.moveDirX)*this.radius))
-        console.log("YYYYYY: "+ (this.y+this.moveDirY+Math.sign(this.moveDirY)*this.radius))
-        console.log(this.y)
-        console.log(this.moveDirY)
-        console.log(this.radius)
-        
+        //console.log(pixels)
 
       if((this.x + this.moveDirX) <= 0 || (this.x + this.moveDirX) >= x) {        
         this.moveDirX *= -1
@@ -155,8 +159,42 @@ class Flippers {
             this.side = side            
         }
 
-        moveFlipper(){
+        moveFlipperUp(angle,context){
+          if(this.angle + angle < 91){
+             this.angle += angle
+             
+             const go = () =>{
+              if(this.angle + 5 < 91){
+                 this.angle += 5
+              this.draw(context)
+            }
+             }
 
+            const goDown = () => {
+              if(this.angle - 5 > 0){
+                this.angle -= 5
+             this.draw(context)
+           }
+            }
+
+             // trycker man in flera gånger blir det cp
+             // så måste ha att saker läggs till en que
+             /*const accelerateFirstStep = setTimeout(go,350)
+             const accelerateSecondStep = setTimeout(go,500)
+             const deAccerate = setTimeout(goDown,550)
+             const deAccerate1 = setTimeout(goDown,550)
+             const deAccerate2 = setTimeout(goDown,750)
+             const deAccerate3 = setTimeout(goDown,950)
+             */
+
+          }
+        }
+
+        moveFlipperDown(angle){
+          if(this.angle - angle >0){
+            this.angle -= angle
+          }
+          
         }
 
         draw(context){
