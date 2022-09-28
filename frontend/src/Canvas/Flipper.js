@@ -8,11 +8,25 @@ const Flipper = props => {
 
     const canvasRef = useRef(null)    
     const canvasSize = { width: 600, height:600 } 
+
+    let intervalID
   
-    const movePunkt = (e) => {        
-        if(e.key == 'ArrowUp'){        
-        e.currentTarget.testpunkten.movePoint(canvasSize.width,canvasSize.height, e.currentTarget.collision,
-          e.currentTarget.context)            
+   const moveBallAuto = (ball, collision, context) => {
+     ball.movePoint(canvasSize.width,canvasSize.height, collision,
+      context)
+   }
+
+    const movePunkt = (e) => {   
+      
+        let ball = e.currentTarget.testpunkten
+        let collision = e.currentTarget.collision
+        let context = e.currentTarget.context
+      
+        if(e.key == 'ArrowUp'){
+          const moveBall = () => {
+            moveBallAuto(ball,collision,context)
+          }
+          intervalID = setInterval(moveBall, 50)
         }
         if(e.key == 'ArrowLeft'){        
           e.currentTarget.leftFlipper.moveFlipperUp(5, e.currentTarget.context)
@@ -22,6 +36,9 @@ const Flipper = props => {
           e.currentTarget.leftFlipper.moveFlipperDown(5, e.currentTarget.context)
           e.currentTarget.rightFlipper.moveFlipperDown(5, e.currentTarget.context)
           }
+        if(e.key == 'ArrowDown'){
+            clearInterval(intervalID)
+        }
     }
     
     useEffect(() =>{
@@ -31,7 +48,7 @@ const Flipper = props => {
         let testpunkten = new Point(260,270,25,15,15)
         let collisionPunk = new Point(400,400, 10,0,0)
         let collisionPunk2 = new Point(100,100,50,0,0)
-        let collisionPunk3 = new Point(400,100,50,0,0)        
+        let collisionPunk3 = new Point(400,120,50,0,0)        
 
         let leftFlipper = new Flippers(0,599,45, "left")
         let rightFlipper = new Flippers(599,599,45, "right")
@@ -84,15 +101,12 @@ class Point {
         this.color = `rgb(${random.range(0,254)},${random.range(0,255)},${random.range(0,255)})`
     }
 
-    movePoint(x,y, collisionArray, context){        
-        //console.log(this.x + "       " + this.y)        
-        //console.log("AVSTÅND: " +Math.sqrt(Math.pow(this.x - 100,2) +Math.pow(this.y - 100,2)))
+    movePoint(x,y, collisionArray, context){
         let pixels =  context.getImageData(this.x+this.moveDirX, this.y+this.moveDirY,1,1)
-        //console.log(pixels)
 
-      if((this.x + this.moveDirX) <= 0 || (this.x + this.moveDirX) >= x) {        
+      if((this.x + this.moveDirX) <= 0 || (this.x + this.moveDirX) >= x) {
         this.moveDirX *= -1
-        this.x += this.moveDirX        
+        this.x += this.moveDirX
       } else if(pixels.data[0] === 255){
         this.moveDirX *= -1
         this.x += this.moveDirX                
@@ -109,14 +123,17 @@ class Point {
             this.x += this.moveDirX
         }
         
-      }      
-
-
-
+      }
 
       if((this.y + this.moveDirY) <= 0 || (this.y + this.moveDirY) >= y) {        
-        this.moveDirY *= -1
-        this.y += this.moveDirY
+        
+        if((this.y + this.moveDirY) >= y){       
+          this.y += this.moveDirY+50
+        } else {
+          this.moveDirY *= -1
+          this.y += this.moveDirY
+        } 
+
       } else if(pixels.data[0] === 255){
         this.moveDirY *= -1
         this.y += this.moveDirY
@@ -134,8 +151,7 @@ class Point {
         this.y += this.moveDirY
        }
 
-      }      
-
+        }      
 
     }
 
@@ -163,7 +179,7 @@ class Flippers {
           if(this.angle + angle < 91){
              this.angle += angle
              
-             const go = () =>{
+             const goUp = () =>{
               if(this.angle + 5 < 91){
                  this.angle += 5
               this.draw(context)
@@ -179,6 +195,7 @@ class Flippers {
 
              // trycker man in flera gånger blir det cp
              // så måste ha att saker läggs till en que
+             // den ska inte gå nedåt förrän man släpper intryck knappen..
              /*const accelerateFirstStep = setTimeout(go,350)
              const accelerateSecondStep = setTimeout(go,500)
              const deAccerate = setTimeout(goDown,550)
