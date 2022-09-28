@@ -20,7 +20,7 @@ const Flipper = props => {
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
        
-        let testpunkten = new Point(260,270,35,20,20)
+        let testpunkten = new Point(260,270,25,15,15)
         let collisionPunk = new Point(400,400, 10,0,0)
         let collisionPunk2 = new Point(100,100,50,0,0)
         let collisionPunk3 = new Point(400,100,50,0,0)        
@@ -71,24 +71,32 @@ class Point {
         this.radius = radius
         this.moveDirX = dirX
         this.moveDirY = dirY
-        this.color = `rgb(${random.range(0,255)},${random.range(0,255)},${random.range(0,255)})`
+        this.color = `rgb(${random.range(0,254)},${random.range(0,255)},${random.range(0,255)})`
     }
 
     movePoint(x,y, collisionArray, context){        
         //console.log(this.x + "       " + this.y)        
         //console.log("AVSTÅND: " +Math.sqrt(Math.pow(this.x - 100,2) +Math.pow(this.y - 100,2)))
+        let pixels =  context.getImageData(this.x+this.moveDirX, this.y+this.moveDirY,1,1)
+        console.log(pixels)
+        console.log("XXXXXX: "+(this.x+this.moveDirX+Math.sign(this.moveDirX)*this.radius))
+        console.log("YYYYYY: "+ (this.y+this.moveDirY+Math.sign(this.moveDirY)*this.radius))
+        console.log(this.y)
+        console.log(this.moveDirY)
+        console.log(this.radius)
         
+
       if((this.x + this.moveDirX) <= 0 || (this.x + this.moveDirX) >= x) {        
         this.moveDirX *= -1
         this.x += this.moveDirX        
+      } else if(pixels.data[0] === 255){
+        this.moveDirX *= -1
+        this.x += this.moveDirX                
       } else { 
 
         const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) +
         Math.pow(this.y - object.y,2))) <= 
-        object.radius+Math.abs(this.moveDirX))     
-
-        let pixels =  context.getImageData(this.x+this.moveDirX+this.radius, this.y+this.moveDirY+this.radius,1,1)                  
-        console.log(pixels)
+        object.radius+Math.abs(this.moveDirX))             
 
         if(checkCollision !== undefined){          
             this.moveDirX *= -1
@@ -98,9 +106,17 @@ class Point {
         }
         
       }      
+
+
+
+
       if((this.y + this.moveDirY) <= 0 || (this.y + this.moveDirY) >= y) {        
         this.moveDirY *= -1
         this.y += this.moveDirY
+      } else if(pixels.data[0] === 255){
+        this.moveDirY *= -1
+        this.y += this.moveDirY
+        
       } else {
 
         const checkCollision = collisionArray.find(object => (Math.sqrt(Math.pow(this.x - object.x,2) + 
@@ -115,6 +131,8 @@ class Point {
        }
 
       }      
+
+
     }
 
     draw(context) {      
@@ -148,7 +166,7 @@ class Flippers {
         if(this.side === "left"){
             context.lineTo(this.getX(this.angle),600-this.getY(this.angle))
         } else context.lineTo(600-this.getX(this.angle),600-this.getY(this.angle))        
-        context.lineWidth = 21;
+        context.lineWidth = 35;
         context.strokeStyle = 'red'
         context.stroke()
         context.restore()
