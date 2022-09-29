@@ -12,7 +12,12 @@ function App() {
   const [allscores, SetAllScores] = useState([])  
 
     
-  
+  const addScore = (amount) => {
+    console.log("amount: " +amount)
+    console.log("score: " +score)
+    let newscore = score + amount
+    setScore(newscore)
+  }
 
   const saveScore = () => {
     SaveScoreToDatabase(userName, score).then(() =>GetScoresFromDatabase(SetAllScores))
@@ -24,13 +29,19 @@ function App() {
 
   return (
     <div>
-      <Flipper />
-           <div>fetch to mongoDB test</div>
-     <input value={userName} type="text" onChange={e =>{setUserName(e.target.value)}} />
-     <input value={score} type="number" onChange={e =>{setScore(e.target.value)}} />
-     <button onClick={() => saveScore()}>to database</button>     
+      <Flipper score={score} setScore={setScore} />
+           <div>Push arrow up to start, left arrow to move flippers up and right arrow to move them down</div>
+           <div>F5 to restart</div>
+           <div>&nbsp;</div>
+           <span>Score: {score}</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+     <input value={userName} type="text" onChange={e =>{setUserName(e.target.value)}} />     
+     <button onClick={() => saveScore()}>Add my score</button>
+     <br/>
+     <div>&nbsp;</div>
+     <div>------------</div>   
+     <div>Top 10: </div>   
       <div>
-       {allscores.sort((a,b) => a.score - b.score).slice(0,20).map((p, index) => <div key={index}>{p.name} - {p.score}</div>)}
+       {allscores.sort((a,b) => b.score - a.score).slice(0,10).map((p, index) => <div key={index}>{p.name} : {p.score}</div>)}
       </div>
     </div>
   );

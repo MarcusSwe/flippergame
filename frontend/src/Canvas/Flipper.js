@@ -1,19 +1,26 @@
-import { object } from 'prop-types'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import App from '../App'
 const math = require('canvas-sketch-util/math')
 const random = require('canvas-sketch-util/random')
 const color = require('canvas-sketch-util/color')
 
-const Flipper = props => {
+const Flipper = ({ setScore }) => {
 
-    const canvasRef = useRef(null)    
-    const canvasSize = { width: 600, height:600 } 
+   const canvasRef = useRef(null)    
+   const canvasSize = { width: 600, height:600 } 
 
-    let intervalID
-  
+   let intervalID    
+   let scoreU = 0
+
    const moveBallAuto = (ball, collision, context) => {
-     ball.movePoint(canvasSize.width,canvasSize.height, collision,
+   let scoreX = ball.movePoint(canvasSize.width,canvasSize.height, collision,
       context)
+      if(scoreX !== 0) {   
+         scoreU += scoreX
+         console.log(scoreU)
+           setScore(scoreU)
+      }
+     
    }
 
     const movePunkt = (e) => {   
@@ -26,7 +33,7 @@ const Flipper = props => {
           const moveBall = () => {
             moveBallAuto(ball,collision,context)
           }
-          intervalID = setInterval(moveBall, 50)
+          intervalID = setInterval(moveBall, 60)
         }
         if(e.key == 'ArrowLeft'){        
           e.currentTarget.leftFlipper.moveFlipperUp(5, e.currentTarget.context)
@@ -46,9 +53,9 @@ const Flipper = props => {
         const context = canvas.getContext('2d')
        
         let testpunkten = new Point(260,270,25,15,15)
-        let collisionPunk = new Point(400,400, 10,0,0)
-        let collisionPunk2 = new Point(100,100,50,0,0)
-        let collisionPunk3 = new Point(400,120,50,0,0)        
+        let collisionPunk = new Point(400,400, 10,0,0, 15)
+        let collisionPunk2 = new Point(100,100,50,0,0,15)
+        let collisionPunk3 = new Point(380,120,50,0,0,-10)        
 
         let leftFlipper = new Flippers(0,599,45, "left")
         let rightFlipper = new Flippers(599,599,45, "right")
@@ -92,16 +99,20 @@ const Flipper = props => {
 }
 
 class Point {
-    constructor(x,y,radius = 0,dirX = 6, dirY = 6){
+    constructor(x,y,radius = 0,dirX = 6, dirY = 6, score = 0){
         this.x = x
         this.y = y
         this.radius = radius
         this.moveDirX = dirX
         this.moveDirY = dirY
+        this.score = score
         this.color = `rgb(${random.range(0,254)},${random.range(0,255)},${random.range(0,255)})`
-    }
+        this.giveScore = false;
+        this.giveScoreFromCollisioner = 0;
+    }   
 
     movePoint(x,y, collisionArray, context){
+        this.giveScoreFromCollisioner = 0;
         let pixels =  context.getImageData(this.x+this.moveDirX, this.y+this.moveDirY,1,1)
 
       if((this.x + this.moveDirX) <= 0 || (this.x + this.moveDirX) >= x) {
@@ -119,6 +130,8 @@ class Point {
         if(checkCollision !== undefined){          
             this.moveDirX *= -1
             this.x += this.moveDirX        
+           this.giveScore = true
+           this.giveScoreFromCollisioner = checkCollision.score            
         } else {
             this.x += this.moveDirX
         }
@@ -128,7 +141,7 @@ class Point {
       if((this.y + this.moveDirY) <= 0 || (this.y + this.moveDirY) >= y) {        
         
         if((this.y + this.moveDirY) >= y){       
-          this.y += this.moveDirY+50
+          this.y += this.moveDirY+50          
         } else {
           this.moveDirY *= -1
           this.y += this.moveDirY
@@ -146,12 +159,20 @@ class Point {
         
        if(checkCollision !== undefined){
         this.moveDirY *= -1
-        this.y += this.moveDirY             
+        this.y += this.moveDirY           
+        this.giveScore = true  
+        this.giveScoreFromCollisioner = checkCollision.score
        }else {
         this.y += this.moveDirY
        }
 
         }      
+
+      if(this.giveScore){
+        
+        this.giveScore = false;        
+        return this.giveScoreFromCollisioner
+      } else return 0
 
     }
 
